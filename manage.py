@@ -2,6 +2,7 @@ import os
 from flask_script import Manager
 from loremipsum import get_sentences
 
+from blog.database import session, Entry
 from blog import app
 
 manager = Manager(app)
@@ -16,7 +17,9 @@ def seed():
 	for i in range(25):
 		entry = Entry(
 			title = "Test Entry #{}".format(i),
-			content = get_sentences(1)
+			# get_sentences returns a tuple the size of
+			# what's passed in. [0] will access the tuple
+			content = get_sentences(1)[0]
 		)
 		session.add(entry)
 	session.commit()
