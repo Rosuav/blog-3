@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import request, redirect, url_for, render_template
 
 from . import app
 from .database import session, Entry
@@ -28,4 +28,17 @@ def entries(page=1):
                            has_prev=has_prev,
                            page=page,
                            total_pages=total_pages,)
-    
+
+@app.route("/entry/add", methods=["GET"])
+def add_entry_get():
+    return render_template("add_entry.html")
+
+@app.route("/entry/add", methods=["POST"])
+def add_entry_post():
+    entry=Entry(
+        title=request.form["title"],
+        content=request.form["content"],
+        )
+    session.add(entry)
+    session.commit()
+    return redirect(url_for("entries"))
