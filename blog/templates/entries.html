@@ -4,4 +4,20 @@
     {% for entry in entries %}
     {{ macros.render_entry(entry) }}
     {% endfor %}
+
+    <ul class="pager">
+        <!--A bit confusing as has_next is referring to whether there is or is not a page to flip 'back' to
+        becuase items are in reverse cron-->
+        {% if has_next %}
+            <li class="previous">
+            <a href="{{url_for('entries', page=page+1)}}">&larr; Older</a>
+            </li>
+        {% endif %}
+        {% if has_prev %}
+        <li class="next">
+            <a href="{{url_for('entries', page=page-1)}}">&rarr; Newer</a>
+        </li>
+            
+        {% endif %}
+    </ul>
 {% endblock %}
