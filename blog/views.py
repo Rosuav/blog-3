@@ -1,4 +1,4 @@
-from flask import request, redirect, url_for, render_template
+from flask import request, redirect, url_for,   render_template
 
 from . import app
 from .database import session, Entry
@@ -42,3 +42,9 @@ def add_entry_post():
     session.add(entry)
     session.commit()
     return redirect(url_for("entries"))
+
+@app.route("/entry/<int:entry_id>")
+def entry(entry_id):
+    # Without .first(), I'm entry is just the query itself rather than the results
+    entry = session.query(Entry).filter_by(id=entry_id).first()
+    return render_template("view_entry.html", entry=entry)
