@@ -51,5 +51,5 @@ def entry(entry_id):
 
 @app.route("/entry/edit/<int:entry_id>")
 def edit_entry(entry_id):
-    entry = session.query(Entry).filter_by(id=entry.id).first()
+    entry = session.query(Entry).filter_by(id=entry_id).first()
     return render_template("edit_entry.html", entry=entry)
