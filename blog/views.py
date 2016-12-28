@@ -3,12 +3,18 @@ from flask import request, redirect, url_for,   render_template
 from . import app
 from .database import session, Entry
 
-PAGINATE_BY = 10
 
 @app.route("/")
 @app.route("/page/<int:page>")
-def entries(page=1):
-    # Zero-indexed page
+def entries(page=1, limit=10):
+    PAGINATE_BY = limit
+
+    if(request.args.get('limit')):
+        limit = int(request.args.get('limit'))
+        if(0 < limit < 99):
+            PAGINATE_BY = limit
+
+    #Zero Indexing
     page_index = page - 1
     count = session.query(Entry).count()
 
@@ -22,12 +28,14 @@ def entries(page=1):
     entries = session.query(Entry)
     entries = entries.order_by(Entry.datetime.desc())
     entries = entries[start:end]
+
     return render_template("entries.html",
                            entries=entries,
                            has_next=has_next,
                            has_prev=has_prev,
                            page=page,
-                           total_pages=total_pages,)
+                           total_pages=total_pages,
+                           limit=limit,)
 
 @app.route("/entry/add", methods=["GET"])
 def add_entry_get():
