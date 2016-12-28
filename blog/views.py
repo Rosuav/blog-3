@@ -58,3 +58,12 @@ def edit_entry(entry_id):
         session.commit()
         return render_template("view_entry.html", entry=entry)
     return render_template("edit_entry.html", entry=entry)
+
+@app.route("/entry/delete/<int:entry_id>", methods=["GET","POST"])
+def delete_entry(entry_id):
+    entry = session.query(Entry).filter_by(id=entry_id).first()
+    if request.method == 'POST':
+        session.delete(entry)
+        session.commit()
+        return redirect(url_for("entries"))
+    return render_template("delete_entry.html", entry=entry)
