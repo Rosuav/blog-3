@@ -9,7 +9,7 @@ from .database import session, Entry
 def entries(page=1, limit=10):
     PAGINATE_BY = limit
 
-    if(request.args.get('limit')):
+    if(request.args.get('limit') and request.args.get('limit').isdigit()):
         limit = int(request.args.get('limit'))
         if(0 < limit < 99):
             PAGINATE_BY = limit
