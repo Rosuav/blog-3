@@ -49,7 +49,12 @@ def entry(entry_id):
     entry = session.query(Entry).filter_by(id=entry_id).first()
     return render_template("view_entry.html", entry=entry)
 
-@app.route("/entry/edit/<int:entry_id>")
+@app.route("/entry/edit/<int:entry_id>", methods=["GET", "POST"])
 def edit_entry(entry_id):
     entry = session.query(Entry).filter_by(id=entry_id).first()
+    if request.method == 'POST':
+        entry.content = request.form['content']
+        entry.title = request.form['title']
+        session.commit()
+        return render_template("view_entry.html", entry=entry)
     return render_template("edit_entry.html", entry=entry)
