@@ -1,7 +1,9 @@
-from flask import request, redirect, url_for,   render_template
+from flask import request, redirect, url_for, render_template, flash
+from flask_login import login_user, login_required
+from werkzeug.security import check_password_hash
 
 from . import app
-from .database import session, Entry
+from .database import session, Entry, User
 
 
 @app.route("/")
@@ -38,10 +40,12 @@ def entries(page=1, limit=10):
                            limit=limit,)
 
 @app.route("/entry/add", methods=["GET"])
+@login_required
 def add_entry_get():
     return render_template("add_entry.html")
 
 @app.route("/entry/add", methods=["POST"])
+@login_required
 def add_entry_post():
     entry=Entry(
         title=request.form["title"],
@@ -52,12 +56,14 @@ def add_entry_post():
     return redirect(url_for("entries"))
 
 @app.route("/entry/<int:entry_id>")
+@login_required
 def entry(entry_id):
     # Without .first(), entry is just the query itself rather than the results
     entry = session.query(Entry).filter_by(id=entry_id).first()
     return render_template("view_entry.html", entry=entry)
 
 @app.route("/entry/edit/<int:entry_id>", methods=["GET", "POST"])
+@login_required
 def edit_entry(entry_id):
     entry = session.query(Entry).filter_by(id=entry_id).first()
     if request.method == 'POST':
@@ -68,6 +74,7 @@ def edit_entry(entry_id):
     return render_template("edit_entry.html", entry=entry)
 
 @app.route("/entry/delete/<int:entry_id>", methods=["GET","POST"])
+@login_required
 def delete_entry(entry_id):
     entry = session.query(Entry).filter_by(id=entry_id).first()
     if request.method == 'POST':
@@ -79,3 +86,15 @@ def delete_entry(entry_id):
 @app.route("/login", methods=["GET"])
 def login_get():
     return render_template("login.html")
+
+@app.route("/login", methods=["POST"])
+def login_post():
+    email = request.form["email"]
+    password = request.form["password"]
+    user = session.query(User).filter_by(email=email).first()
+    if not user or not check_password_hash(user.password, password):
+        flash("Incorrect username or password", "danger")
+        return redirect(url_for("login_get"))
+
+    login_user(user)
+    return redirect(request.args.get('next') or url_for("entries"))
