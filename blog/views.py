@@ -75,3 +75,7 @@ def delete_entry(entry_id):
         session.commit()
         return redirect(url_for("entries"))
     return render_template("delete_entry.html", entry=entry)
+
+@app.route("/login", methods=["GET"])
+def login_get():
+    return render_template("login.html")
