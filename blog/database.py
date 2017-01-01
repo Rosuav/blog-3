@@ -1,7 +1,6 @@
 import datetime
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, Text, 
-                       DateTime, create_engine, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, create_engine, ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -13,12 +12,12 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 class Entry(Base):
-	__tablename__ = "entries"
+    __tablename__ = "entries"
 
-	id = Column(Integer, primary_key=True)
-	title = Column(String(1024))
-	content = Column(Text)
-	datetime = Column(DateTime, default=datetime.datetime.now)
+    id = Column(Integer, primary_key=True)
+    title = Column(String(1024))
+    content = Column(Text)
+    datetime = Column(DateTime, default=datetime.datetime.now)
     author_id = Column(Integer, ForeignKey('users.id'))
 
 class User(Base, UserMixin):
