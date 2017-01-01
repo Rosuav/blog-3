@@ -1,5 +1,5 @@
 from flask import request, redirect, url_for, render_template, flash
-from flask_login import login_user, login_required
+from flask_login import login_user, login_required, current_user
 from werkzeug.security import check_password_hash
 
 from . import app
@@ -50,6 +50,7 @@ def add_entry_post():
     entry=Entry(
         title=request.form["title"],
         content=request.form["content"],
+        author=current_user
         )
     session.add(entry)
     session.commit()
