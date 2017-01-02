@@ -1,5 +1,5 @@
 from flask import request, redirect, url_for, render_template, flash
-from flask_login import login_user, login_required, current_user
+from flask_login import login_user, login_required, current_user, logout_user
 from werkzeug.security import check_password_hash
 
 from . import app
@@ -57,7 +57,6 @@ def add_entry_post():
     return redirect(url_for("entries"))
 
 @app.route("/entry/<int:entry_id>")
-@login_required
 def entry(entry_id):
     # Without .first(), entry is just the query itself rather than the results
     entry = session.query(Entry).filter_by(id=entry_id).first()
@@ -100,3 +99,9 @@ def login_post():
 
     login_user(user)
     return redirect(request.args.get('next') or url_for("entries"))
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    flash("You have successfully logged out", "info")
+    return redirect(url_for("entries"))
