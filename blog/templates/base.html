@@ -35,6 +35,12 @@
             <!--TODO: Investigate look and feel for what this should be when resized
             for mobile viewports-->
             <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-left">
+                {% if current_user.is_authenticated %}
+                <li><a href="{{url_for('add_entry_get')}}">Create</a></li>
+                {% endif %}
+                </ul>
+
                 <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
                 <li><a href="{{url_for('logout')}}">Logout</a></li>
