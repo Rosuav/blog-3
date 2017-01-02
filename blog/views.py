@@ -61,7 +61,8 @@ def add_entry_post():
 def entry(entry_id):
     # Without .first(), entry is just the query itself rather than the results
     entry = session.query(Entry).filter_by(id=entry_id).first()
-    return render_template("view_entry.html", entry=entry)
+    is_author = entry.author == current_user
+    return render_template("view_entry.html", entry=entry, is_author=is_author)
 
 @app.route("/entry/edit/<int:entry_id>", methods=["GET", "POST"])
 @login_required
