@@ -11,9 +11,10 @@ from .database import session, Entry, User
 def entries(page=1, limit=10):
     PAGINATE_BY = limit
 
+    #Investigate TRY EXCEPT to handle limit
     if(request.args.get('limit') and request.args.get('limit').isdigit()):
         limit = int(request.args.get('limit'))
-        if(0 < limit < 99):
+        if(0 < limit <= 100):
             PAGINATE_BY = limit
 
     #Zero Indexing
@@ -37,7 +38,7 @@ def entries(page=1, limit=10):
                            has_prev=has_prev,
                            page=page,
                            total_pages=total_pages,
-                           limit=limit,)
+                           limit=PAGINATE_BY,)
 
 @app.route("/entry/add", methods=["GET"])
 @login_required
@@ -63,7 +64,10 @@ def entry(entry_id):
     is_author = entry.author == current_user
     return render_template("view_entry.html", entry=entry, is_author=is_author)
 
-@app.route("/entry/edit/<int:entry_id>", methods=["GET", "POST"])
+#TODO utilize .get(), ie session.query(Entry).get(entry_id) as
+#this will return NONE if no entry which we can then build logic
+#around
+@app.route("/entry/<int:entry_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit_entry(entry_id):
     entry = session.query(Entry).filter_by(id=entry_id).first()
@@ -71,10 +75,12 @@ def edit_entry(entry_id):
         entry.content = request.form['content']
         entry.title = request.form['title']
         session.commit()
-        return render_template("view_entry.html", entry=entry)
+        return redirect(url_for("entry", entry_id=entry.id))
     return render_template("edit_entry.html", entry=entry)
 
-@app.route("/entry/delete/<int:entry_id>", methods=["GET","POST"])
+#NOTE: Common practice to render_template on GET and 
+#redirect on POST
+@app.route("/entry/<int:entry_id>/delete", methods=["GET","POST"])
 @login_required
 def delete_entry(entry_id):
     entry = session.query(Entry).filter_by(id=entry_id).first()
