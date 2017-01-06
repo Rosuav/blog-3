@@ -15,7 +15,7 @@ class TestView(unittest.TestCase):
         Test Setup
         """
         self.client = app.test_client()
-
+        
         #Setup the tables in the database
         Base.metadata.create_all(engine)
 
@@ -28,11 +28,19 @@ class TestView(unittest.TestCase):
     def tearDown(self):
         """
         Teardown
+        TODO: This drops the table after use, how to validate everything that happens
+        with table before dropping?
         """
         session.close()
         Base.metadata.drop_all(engine)
 
     def simulate_login(self):
+        """
+        Using self.client.session.transaction, we get access to a variable 
+        representing the HTTP session (TODO). We a dd two variables
+        to this session: id of user, and make the session active by setting
+        it to _fresh
+        """
         with self.client.session_transaction() as http_session:
             http_session["user_id"] = str(self.user.id)
             http_session["_fresh"] = True
