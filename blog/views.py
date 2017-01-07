@@ -9,13 +9,15 @@ from .database import session, Entry, User
 @app.route("/")
 @app.route("/page/<int:page>")
 def entries(page=1, limit=10):
-    PAGINATE_BY = limit
 
-    #Investigate TRY EXCEPT to handle limit
-    if(request.args.get('limit') and request.args.get('limit').isdigit()):
-        limit = int(request.args.get('limit'))
-        if(0 < limit <= 100):
-            PAGINATE_BY = limit
+    # Investigate TRY EXCEPT to handle limit
+    # TODO: Solve for range
+    try:
+        limit = request.args.get('limit').isdigit()
+        PAGINATE_BY = limit
+    except Exception as e:
+        # TODO log e
+        PAGINATE_BY = limit
 
     #Zero Indexing
     page_index = page - 1
