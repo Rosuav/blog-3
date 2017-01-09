@@ -6,9 +6,11 @@ from urllib.parse import urlparse
 
 from werkzeug.security import generate_password_hash
 from splinter import Browser
+from faker import Faker
 
 #Config app to use testing db
 os.environ["CONFIG_PATH"] = "blog.config.TestingConfig"
+fake = Faker()
 
 from blog import app
 from blog.database import Base, engine, session, User
@@ -57,5 +59,17 @@ class TestViews(unittest.TestCase):
         button.click()
         self.assertEqual(self.browser.url, "http://127.0.0.1:8080/login")
 
+    def test_new_entry(self):
+        test_login_correct()
+        self.browser.visit("http://127.0.0.1:8080/entry/add")
+        self.browser.fill("title", fake.text())
+        self.browser.fill("entry", fake.text())
+        button = self.browser.find_by_css("button[type=submit]")
+        button.click()
+        self.assertEqual(self.browser.url, "http://127.0.0.1:8080")
+
     if __name__ == "__main__":
         unittest.main()
+
+# TODO: Investigate why 0 tests are running when run with
+# PYTHONPATH="." python tests/test_views_acceptance.py
