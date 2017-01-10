@@ -98,7 +98,7 @@ def login_get():
 
 @app.route("/login", methods=["POST"])
 def login_post():
-    email = request.form["email"]
+    email = request.form["email_address"]
     password = request.form["password"]
     user = session.query(User).filter_by(email=email).first()
     if not user or not check_password_hash(user.password, password):
