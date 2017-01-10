@@ -30,7 +30,9 @@ class TestViews(unittest.TestCase):
         session.commit()
 
         self.process = multiprocessing.Process(target=app.run,
-                                               kwargs={"port:8080"})
+                                               kwargs={"port":8080})
+
+
         self.process.start()
         time.sleep(1)
 
@@ -43,13 +45,16 @@ class TestViews(unittest.TestCase):
         Base.metadata.drop_all(engine)
         self.browser.quit()
 
-    def test_login_correct(self):
+    def login(self):
         self.browser.visit("http://127.0.0.1:8080/login")
         self.browser.fill("email", "alice@example.com")
         self.browser.fill("password", "test")
         button = self.browser.find_by_css("button[type=submit]")
         button.click()
-        self.assertEqual(self.browser.url, "http://127.0.0.1:8080")
+
+    def test_login_correct(self):
+        self.login()
+        self.assertEqual(self.browser.url, "http://127.0.0.1:8080/")
 
     def test_login_incorrect(self):
         self.browser.visit("http://127.0.0.1:8080/login")
@@ -60,16 +65,17 @@ class TestViews(unittest.TestCase):
         self.assertEqual(self.browser.url, "http://127.0.0.1:8080/login")
 
     def test_new_entry(self):
-        test_login_correct()
+        self.login()
         self.browser.visit("http://127.0.0.1:8080/entry/add")
         self.browser.fill("title", fake.text())
-        self.browser.fill("entry", fake.text())
+        self.browser.fill("content", fake.text())
         button = self.browser.find_by_css("button[type=submit]")
         button.click()
-        self.assertEqual(self.browser.url, "http://127.0.0.1:8080")
+        self.assertEqual(self.browser.url, "http://127.0.0.1:8080/")
 
-    if __name__ == "__main__":
-        unittest.main()
+
+if __name__ == "__main__":
+    unittest.main()
 
 # TODO: Investigate why 0 tests are running when run with
 # PYTHONPATH="." python tests/test_views_acceptance.py
